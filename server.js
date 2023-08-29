@@ -4,6 +4,8 @@ const mysql = require('mysql');
 const inquirer = require('inquirer');
 const dotenv = require('dotenv');
 
+const routes = require('./routes')
+
 const PORT = process.env.PORT || 3001;
 const app = express();
 
@@ -11,13 +13,9 @@ const app = express();
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-// mysql connection, credentials stored in .env file
-const db = mysql.createConnection({
-    host: 'localhost',
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    database: 'employee_db'
-})
+app.use('/api', routes);
+
+// moved mysql connections to connection.js in /db
 
 app.listen(PORT, () => {
     console.log(`Server listening on port ${PORT}`)
