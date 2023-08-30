@@ -34,7 +34,7 @@ function promptUser(){
             case 'View all departments':
                 db.connect((err) => {
                     if (err) throw err;
-                    db.query('SELECT * FROM department', (err, results) => {
+                    db.query('SELECT * FROM departments', (err, results) => {
                         if (err) {
                             console.log(err);
                         } else {
