@@ -1,10 +1,11 @@
 const mysql = require('mysql');
+const dotenv = require('dotenv');
 
 // mysql connection, credentials stored in .env file
 const db = mysql.createConnection({
     host: 'localhost',
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
+    user: 'root',
+    password: '',
     database: 'employee_db'
 });
 
