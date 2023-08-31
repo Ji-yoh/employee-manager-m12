@@ -4,6 +4,7 @@ const mysql = require('mysql');
 const inquirer = require('inquirer');
 const dotenv = require('dotenv');
 const db = require('././db/connection');
+const mySqlQueries = require('./db/queries')
 
 // const routes = require('./routes')
 
@@ -26,22 +27,21 @@ function promptUser(){
             type: 'list',
             name: 'prompt',
             message: 'What would you like to do?',
-            choices: ['View all departments', 'View all roles', 'View all employees']
+            choices: ['View all departments', 'View all roles', 'View all employees', 'Exit'],
+            loop: true
         }
     ]).then((answers) => { 
         // move queries to seperate file
         switch(answers.prompt) {
             case 'View all departments':
-                db.connect((err) => {
-                    if (err) throw err;
-                    db.query('SELECT * FROM departments', (err, results) => {
-                        if (err) {
-                            console.log(err);
-                        } else {
-                            console.table(results);
+                db.query('SELECT * FROM departments', (err, results) => {
+                    if (err) {
+                        console.log(err);
+                    } else {
+                        console.table(results);
+                        return promptUser();
                         }
-                    });
-                })
+                    }); 
                 break;
             case 'View all roles':
                 db.query('SELECT * FROM roles', (err, results) => {
@@ -49,6 +49,7 @@ function promptUser(){
                         console.log(err);
                     } else {
                         console.table(results);
+                        return promptUser();
                     }
                 });
                 break;
@@ -57,12 +58,17 @@ function promptUser(){
                     if (err) {
                         console.log(err);
                     } else {
-                        console.table(results)
+                        console.table(results);
+                        return promptUser();
                     }
                 });
                 break;
+            case 'Exit':
+                process.exit();
         }
     })
 }
 
-promptUser();
+// promptUser();
+
+module.exports = promptUser()
