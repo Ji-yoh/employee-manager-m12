@@ -1,3 +1,5 @@
+// currently not in use since I want promptUser() to be recursive
+
 const db = require('./connection')
 const promptUser = require('../index') // import promptUser function from index.js
 
