@@ -23,7 +23,6 @@ CREATE TABLE employees (
     last_name VARCHAR(30) NOT NULL,
     role_id INT NOT NULL,
     manager_id INT NULL,
-    FOREIGN KEY (role_id) REFERENCES roles(id) ON DELETE CASCADE,
     FOREIGN KEY (manager_id) REFERENCES employees(id) ON DELETE SET NULL
 );
 
@@ -53,9 +52,9 @@ VALUES  ('Eldon', 'Tyrel', 1, NULL),
         ('Roy', 'Batty', 3, NULL),
         ('Pris', 'Stratton', 4, 3),
         ('Leon', 'Kowalski', 4, 3),
-        ('Rachael', 'Rosen', 5, 3),
-        ('Harry', 'Bryant', 6, NULL),
-        ('Rick', 'Deckard', 7, 6),
-        ('Gaff', 'Gaff', 8, 6),
-        ('Bryant', 'Bryant', 9, 6),
-        ('Iris', 'Iris', 10, 6);
+        ('Rachael', 'Rosen', 4, 3),
+        ('Harry', 'Bryant', 7, NULL),
+        ('Rick', 'Deckard', 8, 7),
+        ('Gaff', 'Gaff', 9, 7),
+        ('Bryant', 'Bryant', 10, 7),
+        ('Iris', 'Iris', 10, 7);

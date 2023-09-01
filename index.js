@@ -44,7 +44,17 @@ function promptUser() {
                 });
                 break;
             case 'View all employees':
-                db.query('SELECT * FROM employees', (err, results) => {
+                db.query(`SELECT 
+                        employees.id AS 'ID', 
+                        CONCAT(employees.first_name, ' ', employees.last_name) AS 'Employee Name',
+                        roles.title AS 'Role',
+                        roles.salary AS 'Salary',
+                        CONCAT(manager.first_name, ' ', manager.last_name) AS 'Manager',
+                        employees.manager_id AS 'Manager ID'
+                        FROM employees 
+                        JOIN roles ON employees.role_id = roles.id
+                        JOIN departments ON roles.department_id = departments.id
+                        LEFT JOIN employees manager ON manager.id = employees.manager_id`, (err, results) => {
                     if (err) {
                         console.log(err);
                     } else {
