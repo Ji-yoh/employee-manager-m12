@@ -4,11 +4,62 @@ const dotenv = require('dotenv');
 const db = require('././db/connection');
 // const mySqlQueries = require('./db/queries')
 
-// const routes = require('./routes')
-
 // moved mysql connections to connection.js in /db
 
 // removed server connection, don't need to connect to localhost
+
+// create functions to add departments, roles, employees
+
+function addDepartment() {
+    inquirer.prompt([
+        {
+            type: 'input',
+            name: 'addDepartment',
+            message: 'What is the name of the department you would like to add?',
+        }
+    ]).then((answers) => {
+       switch(answers.addDepartment) {
+              case answers.addDepartment:
+                db.query(`INSERT INTO departments (name) VALUES ('${answers.addDepartment}')`, (err, results) => {
+                     if (err) {
+                          console.log(err);
+                     } else {
+                          console.log('Department added!');
+                          return promptUser();
+                     }
+                });
+                break;
+       }
+    })
+};
+
+function addRole() {
+    inquirer.prompt([
+        {
+            type: 'input',
+            name: 'addRole',
+            message: 'What is the name of the role you would like to add?',
+        },
+        {
+            type: 'input',
+            name: 'addSalary',
+            message: 'What is the salary for this role?',
+        }
+    ]).then((answers) => {
+        switch(answers.addRole) {
+            case answers.addRole:
+                db.query(`INSERT INTO roles (title, salary) VALUES ('${answers.addRole}', '${answers.addSalary}')`, (err, results) => {
+                    if (err) {
+                        console.log(err);
+                    } else {
+                        console.log('Role added!');
+                        return promptUser();
+                    }
+                });
+                break;
+        }
+    })
+}
 
 // use switch cases to create queries for each option
 function promptUser() {
@@ -17,7 +68,7 @@ function promptUser() {
             type: 'list',
             name: 'prompt',
             message: 'What would you like to do?',
-            choices: ['View all departments', 'View all roles', 'View all employees', 'Exit'],
+            choices: ['View all departments', 'View all roles', 'View all employees', new inquirer.Separator(), 'Add a department', 'Add a role', new inquirer.Separator(), 'Exit'],
             loop: true
         }
     ]).then((answers) => { 
@@ -62,6 +113,12 @@ function promptUser() {
                         return promptUser();
                     }
                 });
+                break;
+            case 'Add a department':
+                addDepartment();
+                break;
+            case 'Add a role':
+                addRole();
                 break;
             case 'Exit':
                 process.exit();
