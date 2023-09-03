@@ -64,7 +64,7 @@ async function addRole() {
         ]).then((answers) => {
             const departmentName = answers.addDepartment
             const departmentID = departmentName[0].id // find department id based on department name
-            console.log(departmentID)
+            
             switch(answers.addRole) {
                 case answers.addRole:
                     db.query(sqlQuery.addRole(), [answers.addRole, answers.addSalary, departmentID], (err, results) => {
@@ -79,11 +79,7 @@ async function addRole() {
             }
         })
 
-    }) // get all departments
-    // const deptObject = Object.from(departments)
-    
-    // create array of department names
-
+    })
 }
 
 function addEmployee() {
@@ -108,7 +104,19 @@ function addEmployee() {
             name: 'addManagerID',
             message: 'What is the manager ID of the employee you would like to add?',
         }
-    ])
+    ]).then((answers) => {
+        switch(answers.addFirstName) {
+            case answers.addFirstName:
+                db.query(sqlQuery.addEmployee(), [answers.addFirstName, answers.addLastName, answers.addRoleID, answers.addManagerID], (err, results) => {
+                    if (err) {
+                        console.log(err);
+                    } else {
+                        console.log('Employee added!');
+                        return promptUser();
+                    }
+                });
+        }
+    })
 }
 
 // use switch cases to create queries for each option
