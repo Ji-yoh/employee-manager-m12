@@ -10,6 +10,9 @@ class mySqlQueries {
     viewRoles() {
         return 'SELECT * FROM roles'
     }
+    selectEmployee() {
+        return 'SELECT * FROM employees'
+    }
     viewEmployees() {
         return `SELECT 
                 employees.id AS 'ID', 
@@ -31,6 +34,9 @@ class mySqlQueries {
     }
     addEmployee() {
         return `INSERT INTO employees (first_name, last_name, role_id, manager_id) VALUES (?, ?, ?, ?)`
+    }
+    updateEmployeeRole() {
+        return `UPDATE employees SET role_id = ? WHERE id = ?`
     }
 }
 

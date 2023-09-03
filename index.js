@@ -42,7 +42,7 @@ async function addRole() {
         } 
         const deptObject = JSON.parse(JSON.stringify(results))
         const deptArray = Array.from(deptObject)
-        const departmentChoices = deptArray.map(department => department.name)
+        const departmentChoices = deptArray.map(department => department['name'])
 
         inquirer.prompt([
             {
@@ -82,7 +82,7 @@ async function addRole() {
     })
 }
 
-function addEmployee() {
+async function addEmployee() {
     inquirer.prompt([
         {
             type: 'input',
@@ -119,6 +119,51 @@ function addEmployee() {
     })
 }
 
+// create function to update employee roles
+async function updateEmployeeRole() {
+    db.query(sqlQuery.selectEmployee(), (err, results) => {
+        if (err) {
+            console.log(err);
+        } 
+        const employeeObject = JSON.parse(JSON.stringify(results))
+        const employeeArray = Array.from(employeeObject)
+        const employeeChoices = employeeArray.map(employee => employee['last_name'])
+        // const employeeID = employeeArray.map(employee => employee.ID)
+
+        inquirer.prompt([
+            {
+                type: 'list',
+                name: 'updateEmployee',
+                message: 'Which employee would you like to update?',
+                choices: employeeChoices
+            },
+            {
+                type: 'input',
+                name: 'updateRole',
+                message: 'What is the new role ID for this employee?',
+            }
+        ]).then((answers) => {
+           // const employeeName = answers.updateEmployee
+           // const employeeID =  // find employee id based on employee name
+           // console.log(employeeID)
+
+            switch(answers.updateRole) {
+                case answers.updateRole:
+                    db.query(sqlQuery.updateEmployeeRole(), [answers.updateRole, answers.updateRole], (err, results) => {
+                        if (err) {
+                            console.log(err);
+                        } else {
+                            console.log('Employee role updated!');
+                            return promptUser();
+                        }
+                    });
+                    break;
+            }
+        })
+
+    })
+}
+
 // use switch cases to create queries for each option
 function promptUser() {
     inquirer.prompt([
@@ -126,7 +171,7 @@ function promptUser() {
             type: 'list',
             name: 'prompt',
             message: 'What would you like to do?',
-            choices: ['View all departments', 'View all roles', 'View all employees', new inquirer.Separator(), 'Add a department', 'Add a role', 'Add an employee', new inquirer.Separator(), 'Exit'],
+            choices: ['View all departments', 'View all roles', 'View all employees', 'Add a department', 'Add a role', 'Add an employee', 'Update an existing employee role', new inquirer.Separator(), 'Exit'],
             loop: true
         }
     ]).then((answers) => { 
@@ -170,6 +215,9 @@ function promptUser() {
                 break;
             case 'Add an employee':
                 addEmployee();
+                break;
+            case 'Update an existing employee role':
+                updateEmployeeRole();
                 break;
             case 'Exit':
                 process.exit();
