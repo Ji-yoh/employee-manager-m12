@@ -1,8 +1,10 @@
+// consider creating a single function to handle all queries, call that function in the switch cases- queries can be moved to seperate file
 const mysql = require('mysql');
 const inquirer = require('inquirer');
 const dotenv = require('dotenv');
 const db = require('././db/connection');
-// const mySqlQueries = require('./db/queries')
+const mySqlQueries = require('./db/queries')
+const sqlQuery = new mySqlQueries(); // new instance of mySqlQueries class
 
 // moved mysql connections to connection.js in /db
 
@@ -10,7 +12,7 @@ const db = require('././db/connection');
 
 // create functions to add departments, roles, employees
 
-function addDepartment() {
+async function addDepartment() {
     inquirer.prompt([
         {
             type: 'input',
@@ -20,7 +22,7 @@ function addDepartment() {
     ]).then((answers) => {
        switch(answers.addDepartment) {
               case answers.addDepartment:
-                db.query(`INSERT INTO departments (name) VALUES ('${answers.addDepartment}')`, (err, results) => {
+                db.query(sqlQuery.addDepartment(), [answers.addDepartment], (err, results) => {
                      if (err) {
                           console.log(err);
                      } else {
@@ -33,7 +35,12 @@ function addDepartment() {
     })
 };
 
-function addRole() {
+async function addRole() {
+    const departments = db.query(sqlQuery.viewDepartments()) // get all departments
+    const deptObject = Object.from(departments)
+    const deptArray = Array.from(deptObject)
+    const departmentChoices = deptArray.map(department => `${department.name}`)
+    // create array of department names
     inquirer.prompt([
         {
             type: 'input',
@@ -44,11 +51,19 @@ function addRole() {
             type: 'input',
             name: 'addSalary',
             message: 'What is the salary for this role?',
+        },
+        {
+            type: 'list',
+            name: 'addDepartment',
+            message: 'Which department does this role belong to?',
+            choices: departmentChoices
         }
     ]).then((answers) => {
+        const departmentName = answers.addDepartment
+        const departmentID = departments.find(departments => departments.name === departmentName).id // find department id based on department name
         switch(answers.addRole) {
             case answers.addRole:
-                db.query(`INSERT INTO roles (title, salary) VALUES ('${answers.addRole}', '${answers.addSalary}')`, (err, results) => {
+                db.query(dept.addRole(), [answers.addRole, answers.addSalary, departmentID], (err, results) => {
                     if (err) {
                         console.log(err);
                     } else {
@@ -61,6 +76,31 @@ function addRole() {
     })
 }
 
+function addEmployee() {
+    inquirer.prompt([
+        {
+            type: 'input',
+            name: 'addFirstName',
+            message: 'What is the first name of the employee you would like to add?',
+        },
+        {
+            type: 'input',
+            name: 'addLastName',
+            message: 'What is the last name of the employee you would like to add?',
+        },
+        {
+            type: 'input',
+            name: 'addRoleID',
+            message: 'What is the role ID of the employee you would like to add?',
+        },
+        {
+            type: 'input',
+            name: 'addManagerID',
+            message: 'What is the manager ID of the employee you would like to add?',
+        }
+    ])
+}
+
 // use switch cases to create queries for each option
 function promptUser() {
     inquirer.prompt([
@@ -68,14 +108,14 @@ function promptUser() {
             type: 'list',
             name: 'prompt',
             message: 'What would you like to do?',
-            choices: ['View all departments', 'View all roles', 'View all employees', new inquirer.Separator(), 'Add a department', 'Add a role', new inquirer.Separator(), 'Exit'],
+            choices: ['View all departments', 'View all roles', 'View all employees', new inquirer.Separator(), 'Add a department', 'Add a role', 'Add an employee', new inquirer.Separator(), 'Exit'],
             loop: true
         }
     ]).then((answers) => { 
         // move queries to seperate file
         switch(answers.prompt) {
             case 'View all departments':
-                db.query('SELECT * FROM departments', (err, results) => {
+                db.query(sqlQuery.viewDepartments(), (err, results) => {
                     if (err) {
                         console.log(err);
                     } else {
@@ -85,7 +125,7 @@ function promptUser() {
                     }); 
                 break;
             case 'View all roles':
-                db.query('SELECT * FROM roles', (err, results) => {
+                db.query(sqlQuery.viewRoles(), (err, results) => {
                     if (err) {
                         console.log(err);
                     } else {
@@ -95,17 +135,7 @@ function promptUser() {
                 });
                 break;
             case 'View all employees':
-                db.query(`SELECT 
-                        employees.id AS 'ID', 
-                        CONCAT(employees.first_name, ' ', employees.last_name) AS 'Employee Name',
-                        roles.title AS 'Role',
-                        roles.salary AS 'Salary',
-                        CONCAT(manager.first_name, ' ', manager.last_name) AS 'Manager',
-                        employees.manager_id AS 'Manager ID'
-                        FROM employees 
-                        JOIN roles ON employees.role_id = roles.id
-                        JOIN departments ON roles.department_id = departments.id
-                        LEFT JOIN employees manager ON manager.id = employees.manager_id`, (err, results) => {
+                db.query(sqlQuery.viewEmployees(), (err, results) => {
                     if (err) {
                         console.log(err);
                     } else {
@@ -119,6 +149,9 @@ function promptUser() {
                 break;
             case 'Add a role':
                 addRole();
+                break;
+            case 'Add an employee':
+                addEmployee();
                 break;
             case 'Exit':
                 process.exit();
