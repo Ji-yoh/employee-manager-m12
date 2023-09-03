@@ -36,44 +36,54 @@ async function addDepartment() {
 };
 
 async function addRole() {
-    const departments = db.query(sqlQuery.viewDepartments()) // get all departments
-    const deptObject = Object.from(departments)
-    const deptArray = Array.from(deptObject)
-    const departmentChoices = deptArray.map(department => `${department.name}`)
+    const departments = db.query(sqlQuery.viewDepartments(), (err, results) => {
+        if (err) {
+            console.log(err);
+        } 
+        const deptObject = JSON.parse(JSON.stringify(results))
+        const deptArray = Array.from(deptObject)
+        const departmentChoices = deptArray.map(department => department.name)
+
+        inquirer.prompt([
+            {
+                type: 'input',
+                name: 'addRole',
+                message: 'What is the name of the role you would like to add?',
+            },
+            {
+                type: 'input',
+                name: 'addSalary',
+                message: 'What is the salary for this role?',
+            },
+            {
+                type: 'list',
+                name: 'addDepartment',
+                message: 'Which department does this role belong to?',
+                choices: departmentChoices
+            }
+        ]).then((answers) => {
+            const departmentName = answers.addDepartment
+            const departmentID = departmentName[0].id // find department id based on department name
+            console.log(departmentID)
+            switch(answers.addRole) {
+                case answers.addRole:
+                    db.query(sqlQuery.addRole(), [answers.addRole, answers.addSalary, departmentID], (err, results) => {
+                        if (err) {
+                            console.log(err);
+                        } else {
+                            console.log('Role added!');
+                            return promptUser();
+                        }
+                    });
+                    break;
+            }
+        })
+
+    }) // get all departments
+    // const deptObject = Object.from(departments)
+    
     // create array of department names
-    inquirer.prompt([
-        {
-            type: 'input',
-            name: 'addRole',
-            message: 'What is the name of the role you would like to add?',
-        },
-        {
-            type: 'input',
-            name: 'addSalary',
-            message: 'What is the salary for this role?',
-        },
-        {
-            type: 'list',
-            name: 'addDepartment',
-            message: 'Which department does this role belong to?',
-            choices: departmentChoices
-        }
-    ]).then((answers) => {
-        const departmentName = answers.addDepartment
-        const departmentID = departments.find(departments => departments.name === departmentName).id // find department id based on department name
-        switch(answers.addRole) {
-            case answers.addRole:
-                db.query(dept.addRole(), [answers.addRole, answers.addSalary, departmentID], (err, results) => {
-                    if (err) {
-                        console.log(err);
-                    } else {
-                        console.log('Role added!');
-                        return promptUser();
-                    }
-                });
-                break;
-        }
-    })
+
 }
 
 function addEmployee() {
