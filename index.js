@@ -42,8 +42,9 @@ async function addRole() {
         } 
         const deptObject = JSON.parse(JSON.stringify(results))
         const deptArray = Array.from(deptObject)
-        const departmentChoices = deptArray.map(department => department['name'])
+        const departmentChoices = deptArray.map(department => department['id'])
 
+        console.log(departmentChoices)
         inquirer.prompt([
             {
                 type: 'input',
@@ -63,8 +64,9 @@ async function addRole() {
             }
         ]).then((answers) => {
             const departmentName = answers.addDepartment
-            const departmentID = departmentName[0].id // find department id based on department name
-            
+            const departmentID = departmentName[0] // find department id based on department name
+            console.log(departmentID)
+
             switch(answers.addRole) {
                 case answers.addRole:
                     db.query(sqlQuery.addRole(), [answers.addRole, answers.addSalary, departmentID], (err, results) => {
@@ -80,7 +82,7 @@ async function addRole() {
         })
 
     })
-}
+};
 
 async function addEmployee() {
     inquirer.prompt([
@@ -117,17 +119,17 @@ async function addEmployee() {
                 });
         }
     })
-}
+};
 
 // create function to update employee roles
 async function updateEmployeeRole() {
-    db.query(sqlQuery.selectEmployee(), (err, results) => {
+    db.query(sqlQuery.viewEmployees(), (err, results) => {
         if (err) {
             console.log(err);
         } 
         const employeeObject = JSON.parse(JSON.stringify(results))
         const employeeArray = Array.from(employeeObject)
-        const employeeChoices = employeeArray.map(employee => employee['last_name'])
+        const employeeChoices = employeeArray.map(employee => employee['Employee Name'])
         // const employeeID = employeeArray.map(employee => employee.ID)
 
         inquirer.prompt([
@@ -143,9 +145,10 @@ async function updateEmployeeRole() {
                 message: 'What is the new role ID for this employee?',
             }
         ]).then((answers) => {
-           // const employeeName = answers.updateEmployee
-           // const employeeID =  // find employee id based on employee name
-           // console.log(employeeID)
+            const employeeName = answers.updateEmployee
+            // find employee id based on employee name
+            const employeeID = employeeName[0]
+            console.log(employeeID)
 
             switch(answers.updateRole) {
                 case answers.updateRole:
@@ -162,7 +165,7 @@ async function updateEmployeeRole() {
         })
 
     })
-}
+};
 
 // use switch cases to create queries for each option
 function promptUser() {

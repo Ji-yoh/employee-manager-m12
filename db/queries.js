@@ -1,7 +1,6 @@
 // currently not in use since I want promptUser() to be recursive
 
 const db = require('./connection')
-const promptUser = require('../index') // import promptUser function from index.js
 
 class mySqlQueries {
     viewDepartments() {
@@ -18,9 +17,11 @@ class mySqlQueries {
                 employees.id AS 'ID', 
                 CONCAT(employees.first_name, ' ', employees.last_name) AS 'Employee Name',
                 roles.title AS 'Role',
+                employees.role_id AS 'Role ID',
                 roles.salary AS 'Salary',
                 CONCAT(manager.first_name, ' ', manager.last_name) AS 'Manager',
-                employees.manager_id AS 'Manager ID'
+                employees.manager_id AS 'Manager ID',
+                departments.name AS 'Department'
                 FROM employees 
                 JOIN roles ON employees.role_id = roles.id
                 JOIN departments ON roles.department_id = departments.id
