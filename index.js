@@ -44,7 +44,7 @@ async function addRole() {
         const deptArray = Array.from(deptObject)
         const departmentChoices = deptArray.map(department => department['id'])
 
-        console.log(departmentChoices)
+        // console.log(departmentChoices)
         inquirer.prompt([
             {
                 type: 'input',
@@ -64,7 +64,7 @@ async function addRole() {
             }
         ]).then((answers) => {
             const departmentName = answers.addDepartment
-            const departmentID = departmentName[0] // find department id based on department name
+            const departmentID = departmentName // find department id based on department name
             console.log(departmentID)
 
             switch(answers.addRole) {
@@ -129,8 +129,10 @@ async function updateEmployeeRole() {
         } 
         const employeeObject = JSON.parse(JSON.stringify(results))
         const employeeArray = Array.from(employeeObject)
-        const employeeChoices = employeeArray.map(employee => employee['Employee Name'])
+        const employeeChoices = employeeArray.map(employee => employee['Employee Name', 'ID'])
         // const employeeID = employeeArray.map(employee => employee.ID)
+
+        console.log(employeeChoices)
 
         inquirer.prompt([
             {
@@ -145,14 +147,13 @@ async function updateEmployeeRole() {
                 message: 'What is the new role ID for this employee?',
             }
         ]).then((answers) => {
-            const employeeName = answers.updateEmployee
             // find employee id based on employee name
-            const employeeID = employeeName[0]
-            console.log(employeeID)
-
+            const roleId = answers.updateRole
+            console.log(roleId)
+            
             switch(answers.updateRole) {
                 case answers.updateRole:
-                    db.query(sqlQuery.updateEmployeeRole(), [answers.updateRole, answers.updateRole], (err, results) => {
+                    db.query(sqlQuery.updateEmployeeRole(), [roleId, answers.updateEmployee], (err, results) => {
                         if (err) {
                             console.log(err);
                         } else {
