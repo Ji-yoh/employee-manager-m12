@@ -7,7 +7,14 @@ class mySqlQueries {
         return 'SELECT * FROM departments'
     }
     viewRoles() {
-        return 'SELECT * FROM roles'
+        return `SELECT 
+                roles.id AS 'ID',
+                roles.title AS 'Role/Title',
+                roles.salary AS 'Salary',
+                departments.name AS 'Department'
+                FROM roles           
+                JOIN departments ON roles.department_id = departments.id
+        `
     }
     selectEmployee() {
         return 'SELECT * FROM employees'
